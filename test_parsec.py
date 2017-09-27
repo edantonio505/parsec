@@ -20,45 +20,43 @@ def saveFile(response, filename):
 
 
 
+def saveIndexFile(year, qtr):
+	base_url = "https://www.sec.gov/Archives/edgar/full-index/{}/QTR{}/form.idx"
+	filename = "indexes/{}_{}_form.idx"
+	response = requests.get(base_url.format(year, qtr))
+	print "saving {}_{}_form.idx".format(year, qtr)
+	saveFile(response, filename.format(year, qtr))
+
+
 
 def getIndexes(get_current = False):
 	current_quarter, current_year = getCurrentQuarter()
 	if get_current == True:
 		print "updating current quarter index"
-		year = current_year
-		qtr = current_quarter
-		base_url = "https://www.sec.gov/Archives/edgar/full-index/{}/QTR{}/form.idx".format(year, qtr)
-		response = requests.get(base_url)
-		filename = "indexes/{}_{}_form.idx".format(year, qtr)
-		print "saving {}_{}_form.idx".format(year, qtr)
-		saveFile(response, filename)
+		saveIndexFile(current_year, current_quarter)
 	else:
 		for year in range(current_year, 1994, -1):
 			for qtr in range(4, 0, -1):
 				if qtr > current_quarter and year == current_year:
 					pass
 				else:
-					base_url = "https://www.sec.gov/Archives/edgar/full-index/{}/QTR{}/form.idx".format(year, qtr)
-					response = requests.get(base_url)
-					filename = "indexes/{}_{}_form.idx".format(year, qtr)
-					if os.path.isfile(filename):
+					if os.path.isfile("indexes/{}_{}_form.idx".format(year, qtr)):
 						print " {}_{}_form.idx already exists".format(year, qtr)
 						pass
 					else:
-						print "saving {}_{}_form.idx".format(year, qtr)
-						saveFile(response, filename)
+						saveIndexFile(year, qtr)
 
 		
 
 
 def getCompanyFiles(cik, company_ticker):
 	cdir = "company_files"
+	cik = str(cik)
 	for file in os.listdir('indexes'):
 		with open("indexes/{}".format(file),'r') as f:
 			print "checking {}".format(file)
 			for line in f:
 				r = line.split()
-				cik = str(cik)
 				if len(r) >= 5:
 					if cik == r[-3]:
 						indfile = r[-1]
@@ -106,5 +104,5 @@ def getSecFiles(ptickers = None):
 		getSecFilesFromTickers(ptickers)
 
 
-possible_tickers = ['GOOG']
+possible_tickers = ['AAPL', 'B', 'F', 'FB', 'GOOGL']
 getSecFiles(possible_tickers)
