@@ -104,5 +104,7 @@ def getSecFiles(ptickers = None):
 		getSecFilesFromTickers(ptickers)
 
 
-possible_tickers = ['AAPL', 'B', 'F', 'FB', 'GOOGL']
+# possible_tickers = ['AAPL', 'B', 'F', 'FB', 'GOOG']
+
+possible_tickers = ['AAL', 'TSLA', 'SBUX', 'MSFT', 'NFLX', 'PYPL', 'GE', 'EBAY', 'BAC', 'JPM', 'GS', 'BAC', 'CCE', 'INTC', 'IBM']
 getSecFiles(possible_tickers)
