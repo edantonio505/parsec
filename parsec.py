@@ -5,10 +5,9 @@ import re
 import string
 import datetime
 import sys
-
-
-
-
+from bs4 import BeautifulSoup
+import xml.etree.ElementTree as ET
+import pandas as pd
 
 def getIndex(year, qtr):
 	base_url = "https://www.sec.gov/Archives/edgar/full-index/"
@@ -105,6 +104,7 @@ def findUnits(page):
 
 def getRows(page, soup):
 	tables = soup.findAll('table')
+
 	if tables:
 		all_rows = []
 		for table in tables:
@@ -327,6 +327,55 @@ def parsec(filename, info):
 	else: errors.append('Report too long')
 
 	return {'success': success, 'output': output, 'errors': errors}
+
+
+
+
+
+
+
+
+
+def parsefile(page, file):
+	if "<?xml" in page:
+		thing = BeautifulSoup(page, "lxml")
+
+		xml = thing.findAll('xml')
+
+		if len(xml) > 0:
+			root = ET.fromstring(str(xml[0])[6:-6])
+			all_records = []
+			for child in root:
+				if len(child) < 1:
+					print "{}: {}".format(child.tag, child.text)
+				else:
+					print child.tag
+					for subchild in child:
+						if len(subchild) < 1:
+							print "|-- {}: {}".format(subchild.tag, subchild.text)
+						else:
+							print "|-- {}".format(subchild.tag) 
+							for x in subchild:
+
+								if len(x) < 1:
+									print "|--|-- {}: {}".format(x.tag, x.text)
+								else:
+									print "|--|-- {}".format(x.tag)
+									for i in x:
+										if len(i) < 1:
+											print "|--|--|-- {}: {}".format(i.tag, i.text)
+										else:
+											print "|--|--|-- {}".format(i.tag)
+											for a in i:
+												print "|--|--|--|-- {}: {}".format(a.tag, a.text)
+		else:
+			print "something wrong with XML"
+			print xml
+			print file
+			exit()			
+
+	# return {'success': success, 'output': output, 'errors': errors}
+
 
 
 
